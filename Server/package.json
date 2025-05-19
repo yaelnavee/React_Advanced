@@ -2,7 +2,7 @@
   "name": "react_advanced",
   "version": "1.0.0",
   "description": "fullstack project 5",
-  "main": "index.js",
+  "main": "index.jsx",
   "scripts": {
     "server": "json-server --watch db.json"
   },
