@@ -62,7 +62,7 @@
   background-color: #0056b3;
 }
 
-.forgot-password {
+.error {
   text-align: center;
   margin-top: -1rem;
   margin-bottom: 1.5rem;
@@ -70,13 +70,17 @@
   padding-top: 5px;
 }
 
-.forgot-link {
+.link-wrapper {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.switchlink {
   color: #007bff;
   text-decoration: none;
   font-size: 0.9rem;
-  cursor: pointer;
 }
 
-.forgot-link:hover {
+.switchlink:hover {
   text-decoration: underline;
 }

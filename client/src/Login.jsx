@@ -1,26 +1,27 @@
 import { useState } from "react";
 import './css/login.css'
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+
 function Login() {
+  const navigate=useNavigate()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-    const [focusField, setFocusField] = useState(null);
+  const [error, setError]=useState("")
 
-const handleSubmit = () => {
-    //check if password and username are good
+const handleSubmit = async (e) => {
+    e.preventDefault()
+    const result = await fetch(`http://localhost:3000/users?username=${username}&website=${password}`);
+    const users = await result.json();
+    if(users==0){
+      setError("Username or password are incorrect")
+      return
+    }
+    localStorage.setItem("currentUser", JSON.stringify(users[1]))
+    navigate('/home')
   };
 
-  // function func() {
-  //   fetch('http://localhost:3000/users/1')
-  //     .then(response => response.json())
-  //     .then(json => {
-  //       console.log(json);
-  //       setUs(JSON.stringify(json)); // convert object to string for display
-  //     })
-  //     .catch(err => {
-  //       console.error(err);
-  //       setUs("Error fetching data");
-  //     });
-  // }
 
   return (
     <div className="container">
@@ -55,19 +56,17 @@ const handleSubmit = () => {
             required
           />
 
-          <div className="forgot-password">
-            <a
-              href="#"
-              className="forgot-link"
-              onClick={(e) => e.preventDefault()}
-            >
-              Forgot password?
-            </a>
+           <div className="error">
+           {error}
           </div>
 
           <button type="submit" className="button">
             Log In
           </button>
+<div className="link-wrapper">
+  <Link to="/register" className="switchlink">Don't have an account? Register</Link>
+</div>
+
         </form>
       </div>
     </div>

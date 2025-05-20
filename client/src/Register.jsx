@@ -2,6 +2,7 @@
 import { useState } from "react";
 import './css/login.css'
 import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 
 function Register() {
@@ -97,7 +98,7 @@ return
             onChange={(e) => setVerify(e.target.value)}
             required
           />
-          <div className="forgot-password">
+          <div className="error">
            {error}
           </div>
 
@@ -105,6 +106,9 @@ return
           <button type="submit" className="button">
             Register
           </button>
+          <div className="link-wrapper">
+  <Link to="/" className="switchlink">Already have an account? Log in</Link>
+</div>
         </form>
       </div>
     </div>
