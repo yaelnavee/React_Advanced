@@ -1,35 +1,65 @@
-// import { useParams } from "react-router-dom";
-// function Todos() {
-//     const { userId } = useParams();
-
-//   return (
-//     <>todos will be here</>
-//   );
-// }
-
-// export default Todos;
-import React, { useState } from 'react';
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function Todos() {
+  const userId=11
+  const [nextId, setNextId]=useState("")
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [sortBy, setSortBy] = useState("id");
   const [search, setSearch] = useState("");
+  const getTodos=()=>{
+    fetch(`http://localhost:3000/todos?userId=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setTodos(data); 
+    });
+    fetch(`http://localhost:3000/todos`)
+    .then(res => res.json())
+    .then(data => {
+      setNextId((Number(data[data.length - 1].id) + 1).toString()); 
+    });
+  }
+  useEffect(() => {
+  
+  getTodos()
+}, []);
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newTitle.trim()) return;
     const newTodo = {
-      id: Date.now(),
+      userId: userId,
+      id: nextId,
       title: newTitle,
-      done: false,
+      completed: false
     };
-    setTodos([...todos, newTodo]);
+    await fetch(
+        "http://localhost:3000/todos",
+        {
+          method: "POST",
+          body: JSON.stringify(newTodo),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
+    getTodos()
     setNewTitle("");
   };
 
-  const handleDelete = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const handleDelete = async (id) => {
+    await fetch(`http://localhost:3000/todos/${id}`, {
+      method: "DELETE",
+    });
+    getTodos()
+    
   };
+  const handleSave =  (id) => {
+    console.log("save")
+    
+  };
+  
 
   const handleToggle = (id) => {
     setTodos(
@@ -113,6 +143,9 @@ export default function Todos() {
               </div>
               <div style={{ fontSize: '12px', color: '#666' }}>ID: {todo.id}</div>
             </div>
+            <button onClick={() => handleSave(todo.id)} style={{ marginLeft: '10px', backgroundColor: 'blue', color: 'white', padding: '6px 10px', border: 'none', cursor: 'pointer' }}>
+              Save
+            </button>
             <button onClick={() => handleDelete(todo.id)} style={{ marginLeft: '10px', backgroundColor: '#f44336', color: 'white', padding: '6px 10px', border: 'none', cursor: 'pointer' }}>
               Delete
             </button>
@@ -122,3 +155,14 @@ export default function Todos() {
     </div>
   );
 }
+/**
+ * TODO:
+ * 1. styles
+ * 2. save changes button
+ * 3. delete button----------------------------------
+ * 4. completed
+ * 5. filter
+ * 6. search-----------------------------------------
+ * 7. header?
+ * 8. add--------------------------------------------
+ */
