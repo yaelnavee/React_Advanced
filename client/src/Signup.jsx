@@ -79,7 +79,7 @@ function Signup() {
 
     const postResult = await postRes.json();
     console.log("Created:", postResult);
-    localStorage.setItem("currentUser", postResult)
+    localStorage.setItem("currentUser", JSON.stringify(postResult))
     navigate("/home");
 
   } catch (err) {
