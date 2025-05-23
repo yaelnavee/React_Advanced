@@ -300,6 +300,109 @@
   color: #9C27B0;
 }
 
+/* מודל מידע אישי */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 2px solid #f0f0f0;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 20px 20px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.modal-body .user-details {
+  display: grid;
+  gap: 15px;
+}
+
+.modal-body .detail-item {
+  padding: 15px;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+  border-radius: 10px;
+  font-size: 1rem;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.modal-body .detail-item:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-body .detail-item strong {
+  color: #667eea;
+  margin-left: 10px;
+  font-weight: 600;
+}
+
 /* רספונסיביות */
 @media (max-width: 768px) {
   .home-header {
@@ -343,6 +446,24 @@
     padding: 15px;
     font-size: 1rem;
   }
+  
+  /* מודל רספונסיבי */
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .modal-header {
+    padding: 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -363,10 +484,34 @@
     font-size: 2rem;
   }
   
-  .user-info-section,
   .actions-section,
   .stats-section {
     padding: 20px 15px;
     margin-bottom: 20px;
+  }
+  
+  /* מודל במובייל */
+  .modal-content {
+    width: 98%;
+    margin: 10px;
+    max-height: 90vh;
+  }
+  
+  .modal-header {
+    padding: 15px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .modal-body {
+    padding: 15px;
+  }
+  
+  .close-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2rem;
   }
 }

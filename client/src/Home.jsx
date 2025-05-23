@@ -10,6 +10,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showUserInfo, setShowUserInfo] = useState(false);
   
   const navigate = useNavigate();
 
@@ -23,8 +24,22 @@ function Home() {
     }
     
     try {
-      const user = JSON.parse(userData);
+      // בדיקה אם הנתונים כבר object או צריכים parsing
+      let user;
+      if (typeof userData === 'string') {
+        // אם זה string, נסה לעשות parse
+        try {
+          user = JSON.parse(userData);
+        } catch {
+          // אם ה-parse נכשל, זה אומר שזה כבר object כ-string
+          user = userData;
+        }
+      } else {
+        user = userData;
+      }
+      
       setCurrentUser(user);
+      console.log('Current user loaded:', user);
     } catch (err) {
       console.error('Error parsing user data:', err);
       navigate('/');
@@ -130,7 +145,7 @@ function Home() {
         
         <nav className="main-navigation">
           <button 
-            onClick={() => setError(null)} 
+            onClick={() => setShowUserInfo(true)} 
             className="nav-btn info-btn"
             title="מידע אישי"
           >
@@ -167,6 +182,50 @@ function Home() {
         </nav>
       </header>
 
+      {/* מודל מידע אישי */}
+      {showUserInfo && (
+        <div className="modal-overlay" onClick={() => setShowUserInfo(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>מידע אישי</h2>
+              <button 
+                className="close-btn" 
+                onClick={() => setShowUserInfo(false)}
+                title="סגור"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="user-details">
+                <div className="detail-item">
+                  <strong>שם:</strong> {currentUser.name || 'לא צוין'}
+                </div>
+                <div className="detail-item">
+                  <strong>שם משתמש:</strong> {currentUser.username}
+                </div>
+                <div className="detail-item">
+                  <strong>אימייל:</strong> {currentUser.email || 'לא צוין'}
+                </div>
+                <div className="detail-item">
+                  <strong>טלפון:</strong> {currentUser.phone || 'לא צוין'}
+                </div>
+                {currentUser.address && (
+                  <div className="detail-item">
+                    <strong>כתובת:</strong> {`${currentUser.address.street || ''} ${currentUser.address.suite || ''}, ${currentUser.address.city || ''}`}
+                  </div>
+                )}
+                {currentUser.company && (
+                  <div className="detail-item">
+                    <strong>חברה:</strong> {currentUser.company.name || 'לא צוין'}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="home-content">
         {/* הודעות שגיאה וטעינה */}
         {loading && (
@@ -178,37 +237,6 @@ function Home() {
         {error && (
           <div className="message error-message">
             {error}
-          </div>
-        )}
-
-        {/* תוכן מידע אישי (כשלוחצים על Info) */}
-        {!error && !loading && (
-          <div className="user-info-section">
-            <h2>מידע אישי</h2>
-            <div className="user-details">
-              <div className="detail-item">
-                <strong>שם:</strong> {currentUser.name || 'לא צוין'}
-              </div>
-              <div className="detail-item">
-                <strong>שם משתמש:</strong> {currentUser.username}
-              </div>
-              <div className="detail-item">
-                <strong>אימייל:</strong> {currentUser.email || 'לא צוין'}
-              </div>
-              <div className="detail-item">
-                <strong>טלפון:</strong> {currentUser.phone || 'לא צוין'}
-              </div>
-              {currentUser.address && (
-                <div className="detail-item">
-                  <strong>כתובת:</strong> {`${currentUser.address.street || ''} ${currentUser.address.suite || ''}, ${currentUser.address.city || ''}`}
-                </div>
-              )}
-              {currentUser.company && (
-                <div className="detail-item">
-                  <strong>חברה:</strong> {currentUser.company.name || 'לא צוין'}
-                </div>
-              )}
-            </div>
           </div>
         )}
 
