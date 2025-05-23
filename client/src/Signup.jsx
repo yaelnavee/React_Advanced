@@ -30,35 +30,37 @@ function Signup() {
     },
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+  const keys = name.split(".");
 
-    // Handle nested fields
-    if (name.includes(".")) {
-      const keys = name.split(".");
-      setForm((prev) => ({
-        ...prev,
-        [keys[0]]: {
-          ...prev[keys[0]],
-          [keys[1]]: value,
+  setForm((prev) => {
+    const updatedForm = { ...prev };
+
+    if (keys.length === 3) {
+      const [key1, key2, key3] = keys;
+      updatedForm[key1] = {
+        ...prev[key1],
+        [key2]: {
+          ...prev[key1][key2],
+          [key3]: value,
         },
-      }));
-    } else if (name.includes("geo.")) {
-      const [, key] = name.split(".");
-      setForm((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          geo: {
-            ...prev.address.geo,
-            [key]: value,
-          },
-        },
-      }));
+      };
+    } else if (keys.length === 2) {
+      const [key1, key2] = keys;
+      updatedForm[key1] = {
+        ...prev[key1],
+        [key2]: value,
+      };
     } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
+      updatedForm[name] = value;
     }
-  };
+
+    return updatedForm;
+  });
+};
+
+
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -156,17 +158,16 @@ function Signup() {
           value={form.address.zipcode}
           onChange={handleChange}
         />
-
-        <label>Geo Latitude</label>
-        <input
-          name="geo.lat"
-          value={form.address.geo.lat}
-          onChange={handleChange}
-        />
+<label>Geo Longitude</label>
+       <input
+  name="address.geo.lat"
+  value={form.address.geo.lat}
+  onChange={handleChange}
+/>
 
         <label>Geo Longitude</label>
         <input
-          name="geo.lng"
+          name="address.geo.lng"
           value={form.address.geo.lng}
           onChange={handleChange}
         />
