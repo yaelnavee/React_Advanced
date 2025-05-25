@@ -123,7 +123,11 @@ function Home() {
 
   // פונקציה לניווט לעמודים שונים
   const navigateToPage = (page) => {
-    navigate(`/${page}`);
+    if (currentUser && currentUser.id) {
+      navigate(`/users/${currentUser.id}/${page}`);
+    } else {
+      navigate(`/${page}`);
+    }
   };
 
   // אם אין משתמש מחובר, הצג טעינה
