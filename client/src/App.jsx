@@ -6,6 +6,7 @@ import Posts from './Posts';
 import Todos from './Todos';
 import Albums from './Albums';
 import Signup from './Signup';
+import Photos from './Photos';
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,8 @@ function App() {
         <Route path="/posts" element={<Posts />} />
         <Route path="/todos" element={<Todos />} />
         <Route path="/albums" element={<Albums />} />
+        <Route path="/photos" element={<Photos />} />
+
 
       </Routes>
     </BrowserRouter>

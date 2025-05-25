@@ -1,50 +1,60 @@
-import { useParams } from "react-router-dom";
+
+// /**
+//  * TODO:
+//  * 1. styles
+//  * 2. save changes button----------------------------
+//  * 3. delete button----------------------------------
+//  * 4. completed--------------------------------------
+//  * 5. filter-----------------------------------------
+//  * 6. search-----------------------------------------
+//  * 7. header?
+//  * 8. add--------------------------------------------
+//  * 9. save button grayed ??
+//  */
 import { useState, useEffect } from "react";
 
 export default function Todos() {
-  const userId=11
-  const [nextId, setNextId]=useState("")
+  const userId = 11;
+  const [nextId, setNextId] = useState("");
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [sortBy, setSortBy] = useState("id");
   const [search, setSearch] = useState("");
-  const getTodos=()=>{
+
+  const getTodos = () => {
     fetch(`http://localhost:3000/todos?userId=${userId}`)
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      setTodos(data); 
-    });
+      .then((res) => res.json())
+      .then((data) => setTodos(data));
+
     fetch(`http://localhost:3000/todos`)
-    .then(res => res.json())
-    .then(data => {
-      setNextId((Number(data[data.length - 1].id) + 1).toString()); 
-    });
-  }
+      .then((res) => res.json())
+      .then((data) =>
+        setNextId((Number(data[data.length - 1].id) + 1).toString())
+      );
+  };
+
   useEffect(() => {
-  
-  getTodos()
-}, []);
+    getTodos();
+  }, []);
 
   const handleAdd = async () => {
     if (!newTitle.trim()) return;
     const newTodo = {
-      userId: userId,
+      userId,
       id: nextId,
       title: newTitle,
-      completed: false
+      completed: false,
     };
-    await fetch(
-        "http://localhost:3000/todos",
-        {
-          method: "POST",
-          body: JSON.stringify(newTodo),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        }
-      );
-    getTodos()
+
+    await fetch("http://localhost:3000/todos", {
+      method: "POST",
+      body: JSON.stringify(newTodo),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+
+    getTodos();
     setNewTitle("");
   };
 
@@ -52,19 +62,24 @@ export default function Todos() {
     await fetch(`http://localhost:3000/todos/${id}`, {
       method: "DELETE",
     });
-    getTodos()
-    
+    getTodos();
   };
-  const handleSave =  (id) => {
-    console.log("save")
-    
+
+  const handleSave = async (id) => {
+    const toSave = todos.find((todo) => todo.id === id);
+    await fetch(`http://localhost:3000/todos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(toSave),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
   };
-  
 
   const handleToggle = (id) => {
     setTodos(
       todos.map((todo) =>
-        todo.id === id ? { ...todo, done: !todo.done } : todo
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
@@ -83,86 +98,151 @@ export default function Todos() {
       return (
         todo.id.toString().includes(search) ||
         todo.title.toLowerCase().includes(search.toLowerCase()) ||
-        (search.toLowerCase() === "done" && todo.done) ||
-        (search.toLowerCase() === "not done" && !todo.done)
+        (search.toLowerCase() === "completed" && todo.completed) ||
+        (search.toLowerCase() === "not completed" && !todo.completed)
       );
     })
     .sort((a, b) => {
       if (sortBy === "id") return a.id - b.id;
       if (sortBy === "title") return a.title.localeCompare(b.title);
-      if (sortBy === "done") return a.done === b.done ? 0 : a.done ? 1 : -1;
+      if (sortBy === "completed")
+        return a.completed === b.completed ? 0 : a.completed ? 1 : -1;
     });
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>Todos</h1>
+    <div style={{ padding: "30px", fontFamily: "'Segoe UI', sans-serif", maxWidth: "800px", margin: "auto" }}>
+      <h1 style={{ fontSize: "32px", fontWeight: "600", marginBottom: "20px", color: "#2c3e50" }}>📝 Todos</h1>
 
-      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+      {/* Input for new todo */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
         <input
           type="text"
-          placeholder="New todo title"
+          placeholder="Enter new todo..."
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
-          style={{ flex: 1, padding: '8px' }}
+          style={{
+            flex: 1,
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            fontSize: "16px",
+          }}
         />
-        <button onClick={handleAdd} style={{ padding: '8px 12px' }}>Add</button>
+        <button
+          onClick={handleAdd}
+          style={{
+            padding: "10px 16px",
+            backgroundColor: "#3498db",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          Add
+        </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '10px' }}>
+      {/* Search and sort controls */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
         <input
           type="text"
-          placeholder="Search by id, title or status"
+          placeholder="Search todos..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ flex: 1, padding: '8px' }}
+          style={{
+            flex: 1,
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            fontSize: "16px",
+          }}
         />
-
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ padding: '8px' }}>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            fontSize: "16px",
+          }}
+        >
           <option value="id">Sort by ID</option>
           <option value="title">Sort by Title</option>
-          <option value="done">Sort by Status</option>
+          <option value="completed">Sort by Status</option>
         </select>
       </div>
 
-      <div style={{ marginTop: '20px' }}>
+      {/* Todo list */}
+      <div>
         {filteredTodos.map((todo) => (
-          <div key={todo.id} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input
-                  type="checkbox"
-                  checked={todo.done}
-                  onChange={() => handleToggle(todo.id)}
-                />
-                <input
-                  type="text"
-                  value={todo.title}
-                  onChange={(e) => handleUpdate(todo.id, e.target.value)}
-                  style={{ flex: 1, padding: '4px' }}
-                />
-              </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>ID: {todo.id}</div>
+          <div
+            key={todo.id}
+            style={{
+              background: "#f9f9f9",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              padding: "12px",
+              marginBottom: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+            }}
+          >
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => handleToggle(todo.id)}
+                style={{ transform: "scale(1.2)", cursor: "pointer" }}
+              />
+              <input
+                type="text"
+                value={todo.title}
+                onChange={(e) => handleUpdate(todo.id, e.target.value)}
+                style={{
+                  flex: 1,
+                  border: "none",
+                  background: "transparent",
+                  fontSize: "16px",
+                  textDecoration: todo.completed ? "line-through" : "none",
+                }}
+              />
             </div>
-            <button onClick={() => handleSave(todo.id)} style={{ marginLeft: '10px', backgroundColor: 'blue', color: 'white', padding: '6px 10px', border: 'none', cursor: 'pointer' }}>
-              Save
-            </button>
-            <button onClick={() => handleDelete(todo.id)} style={{ marginLeft: '10px', backgroundColor: '#f44336', color: 'white', padding: '6px 10px', border: 'none', cursor: 'pointer' }}>
-              Delete
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "12px", color: "#999" }}>#{todo.id}</span>
+              <button
+                onClick={() => handleSave(todo.id)}
+                style={{
+                  backgroundColor: "#2ecc71",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "6px 10px",
+                  cursor: "pointer",
+                }}
+              >
+                Save
+              </button>
+              <button
+                onClick={() => handleDelete(todo.id)}
+                style={{
+                  backgroundColor: "#e74c3c",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "6px 10px",
+                  cursor: "pointer",
+                }}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 }
-/**
- * TODO:
- * 1. styles
- * 2. save changes button
- * 3. delete button----------------------------------
- * 4. completed
- * 5. filter
- * 6. search-----------------------------------------
- * 7. header?
- * 8. add--------------------------------------------
- */
