@@ -7,7 +7,7 @@ function Signup() {
   const user = JSON.parse(localStorage.getItem("temp"));
 
   const [form, setForm] = useState({
-    id: 0,
+    id: "",
     name: "",
     username: user.username,
     email: "",
@@ -30,65 +30,64 @@ function Signup() {
     },
   });
 
- const handleChange = (e) => {
-  const { name, value } = e.target;
-  const keys = name.split(".");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const keys = name.split(".");
 
-  setForm((prev) => {
-    const updatedForm = { ...prev };
+    setForm((prev) => {
+      const updatedForm = { ...prev };
 
-    if (keys.length === 3) {
-      const [key1, key2, key3] = keys;
-      updatedForm[key1] = {
-        ...prev[key1],
-        [key2]: {
-          ...prev[key1][key2],
-          [key3]: value,
-        },
-      };
-    } else if (keys.length === 2) {
-      const [key1, key2] = keys;
-      updatedForm[key1] = {
-        ...prev[key1],
-        [key2]: value,
-      };
-    } else {
-      updatedForm[name] = value;
-    }
+      if (keys.length === 3) {
+        const [key1, key2, key3] = keys;
+        updatedForm[key1] = {
+          ...prev[key1],
+          [key2]: {
+            ...prev[key1][key2],
+            [key3]: value,
+          },
+        };
+      } else if (keys.length === 2) {
+        const [key1, key2] = keys;
+        updatedForm[key1] = {
+          ...prev[key1],
+          [key2]: value,
+        };
+      } else {
+        updatedForm[name] = value;
+      }
 
-    return updatedForm;
-  });
-};
-
-
+      return updatedForm;
+    });
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const userRes = await fetch('https://jsonplaceholder.typicode.com/users');
-    const users = await userRes.json();
+    try {
+      const userRes = await fetch("http://localhost:3000/users");
+      const users = await userRes.json();
 
-    const updatedForm = { ...form, id: users.length + 1 };
+      const updatedForm = { ...form, id: (users.length + 1).toString() };
 
-    const postRes = await fetch("https://jsonplaceholder.typicode.com/posts", {
-      method: "POST",
-      body: JSON.stringify(updatedForm),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
+      const postRes = await fetch(
+        "http://localhost:3000/users",
+        {
+          method: "POST",
+          body: JSON.stringify(updatedForm),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
 
-    const postResult = await postRes.json();
-    console.log("Created:", postResult);
-    localStorage.setItem("currentUser", JSON.stringify(postResult))
-    navigate("/home");
-
-  } catch (err) {
-    console.error("Submission error:", err);
-  }
-};
-
+      const postResult = await postRes.json();
+      console.log("Created:", postResult);
+      localStorage.setItem("currentUser", JSON.stringify(postResult));
+      navigate("/home");
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
+  };
 
   return (
     <div className="signup-container">
@@ -158,12 +157,12 @@ function Signup() {
           value={form.address.zipcode}
           onChange={handleChange}
         />
-<label>Geo Longitude</label>
-       <input
-  name="address.geo.lat"
-  value={form.address.geo.lat}
-  onChange={handleChange}
-/>
+        <label>Geo Longitude</label>
+        <input
+          name="address.geo.lat"
+          value={form.address.geo.lat}
+          onChange={handleChange}
+        />
 
         <label>Geo Longitude</label>
         <input
