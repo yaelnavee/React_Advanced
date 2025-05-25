@@ -5,9 +5,11 @@
  * 3. delete, update pic
  */
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 function Photos() {
-  const albumId = localStorage.getItem("album");
+  const { userId, albumId } = useParams();
+
   const [photos, setPhotos] = useState([]);
 
   const getPhotos = () => {

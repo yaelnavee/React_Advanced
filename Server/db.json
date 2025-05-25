@@ -252,6 +252,29 @@
         "catchPhrase": "Keep your head up!",
         "bs": "bs"
       }
+    },
+    {
+      "id": "12",
+      "name": "Chana Scheiner",
+      "username": "Chana",
+      "email": "chana@gmail.com",
+      "phone": "987654321",
+      "website": "chana.org",
+      "address": {
+        "street": "nachal Micha 11",
+        "suite": "2",
+        "city": "Beit Shemesh",
+        "zipcode": "9909419",
+        "geo": {
+          "lat": "11",
+          "lng": "33"
+        }
+      },
+      "company": {
+        "name": "Chana's Company",
+        "catchPhrase": "Never give up",
+        "bs": "bs"
+      }
     }
   ],
   "todos": [
@@ -36999,6 +37022,11 @@
       "id": "101",
       "userId": 11,
       "title": "i dont know"
+    },
+    {
+      "id": "102",
+      "userId": "11",
+      "title": "pictures"
     }
   ],
   "comments": [
@@ -40496,7 +40524,7 @@
       "body": "perspiciatis quis doloremque\nveniam nisi eos velit sed\nid totam inventore voluptatem laborum et eveniet\naut aut aut maxime quia temporibus ut omnis"
     },
     {
-      "id": 6,
+      "id": "6",
       "postId": "101",
       "name": "יעל נווה",
       "email": "yaelnave4@gmail.com",
@@ -41112,7 +41140,7 @@
       "body": "djcb\\l,jkcb\\"
     },
     {
-      "id": 102,
+      "id": "102",
       "userId": 101,
       "title": "kdsjncd",
       "body": "sdcsd"

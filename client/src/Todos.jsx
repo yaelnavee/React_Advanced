@@ -12,9 +12,11 @@
 //  * 9. save button grayed ??
 //  */
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function Todos() {
-  const userId = 11;
+  const { userId } = useParams();
+  const navigate = useNavigate();
   const [nextId, setNextId] = useState("");
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
@@ -110,8 +112,41 @@ export default function Todos() {
     });
 
   return (
-    <div style={{ padding: "30px", fontFamily: "'Segoe UI', sans-serif", maxWidth: "800px", margin: "auto" }}>
-      <h1 style={{ fontSize: "32px", fontWeight: "600", marginBottom: "20px", color: "#2c3e50" }}>📝 Todos</h1>
+    <div
+      style={{
+        padding: "30px",
+        fontFamily: "'Segoe UI', sans-serif",
+        maxWidth: "800px",
+        margin: "auto",
+      }}
+    >
+      {/* Header with Home button */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h1 style={{ fontSize: "32px", fontWeight: "600", color: "#2c3e50", margin: 0 }}>
+          📝 Todos
+        </h1>
+        <button
+          onClick={() => navigate(`/home/users/${userId}`)}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#2c3e50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "500"
+          }}
+        >
+          Home
+        </button>
+      </div>
 
       {/* Input for new todo */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
