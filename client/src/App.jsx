@@ -7,6 +7,7 @@ import Todos from './Todos';
 import Albums from './Albums';
 import Signup from './Signup';
 import Photos from './Photos';
+import AddPhotos from './AddPhotos';
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,8 @@ function App() {
         <Route path="/users/:userId/todos" element={<Todos />} />
         <Route path="/users/:userId/albums" element={<Albums />} />
         <Route path="/users/:userId/albums/:albumId/photos" element={<Photos />} />
+        <Route path="/users/:userId/albums/:albumId/photos/addphotos" element={<AddPhotos />} />
+
 
 
       </Routes>
