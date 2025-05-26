@@ -255,25 +255,25 @@
     },
     {
       "id": "12",
-      "name": "יעל נווה",
-      "username": "yael",
-      "email": "yaelnave4@gmail.com",
-      "phone": "0505297888",
-      "website": "12345",
+      "name": "Chana Scheiner",
+      "username": "Chana",
+      "email": "chana@gmail.com",
+      "phone": "987654321",
+      "website": "chana.org",
       "address": {
-        "street": "מזל גדי 4",
-        "suite": "דירה 9 קומה 2",
-        "city": "ירושלים",
-        "zipcode": "9757204",
+        "street": "nachal Micha 11",
+        "suite": "2",
+        "city": "Beit Shemesh",
+        "zipcode": "9909419",
         "geo": {
-          "lat": "",
-          "lng": ""
+          "lat": "11",
+          "lng": "33"
         }
       },
       "company": {
-        "name": "",
-        "catchPhrase": "",
-        "bs": ""
+        "name": "Chana's Company",
+        "catchPhrase": "Never give up",
+        "bs": "bs"
       }
     }
   ],
@@ -37022,6 +37022,11 @@
       "id": "101",
       "userId": 11,
       "title": "i dont know"
+    },
+    {
+      "id": "102",
+      "userId": "11",
+      "title": "pictures"
     }
   ],
   "comments": [

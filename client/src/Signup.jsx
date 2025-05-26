@@ -67,7 +67,7 @@ function Signup() {
       const userRes = await fetch("http://localhost:3000/users");
       const users = await userRes.json();
 
-      const updatedForm = { ...form, id: (users.length + 1).toString() };
+      const updatedForm = { ...form, id: (Number(users[users.length - 1].id) + 1).toString() };
 
       const postRes = await fetch(
         "http://localhost:3000/users",
@@ -83,7 +83,7 @@ function Signup() {
       const postResult = await postRes.json();
       console.log("Created:", postResult);
       localStorage.setItem("currentUser", JSON.stringify(postResult));
-      navigate("/home");
+      navigate(`/home/users/${postResult.id}`);
     } catch (err) {
       console.error("Submission error:", err);
     }

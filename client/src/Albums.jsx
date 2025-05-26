@@ -2,20 +2,22 @@
 // //TODO
 // /**
 //  * 1. add id to album display----------------------------
-//  * 2. add search by id or title
+//  * 2. add search by id or title----------------------------
 //  * 3. add album-------------------------------------------
 //  * 4. photos---------------------------------------------
-//  */
+//  * 5. header
+
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from "react-router-dom";
 
 function Albums() {
-  const userId = 1;
+  const { userId } = useParams();
   const [albums, setAlbums] = useState([]);
   const [nextId, setNextId] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const navigate=useNavigate()
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const getAlbums = () => {
     fetch(`http://localhost:3000/albums?userId=${userId}`)
@@ -34,8 +36,7 @@ function Albums() {
   }, []);
 
   const handleClickAlbum = (id) => {
-    localStorage.setItem("album", id)
-    navigate('/photos')
+    navigate(`/users/${userId}/albums/${id}/photos`);
   };
 
   const addAlbum = async () => {
@@ -60,10 +61,51 @@ function Albums() {
     getAlbums();
   };
 
+  const filteredAlbums = albums.filter((album) =>
+    album.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    album.id.toString().includes(searchQuery)
+  );
+
   return (
     <div style={{ padding: "30px", fontFamily: "'Segoe UI', sans-serif", maxWidth: "1000px", margin: "auto" }}>
-      <h1 style={{ fontSize: "32px", fontWeight: "600", marginBottom: "20px", color: "#2c3e50" }}>🎵 Albums</h1>
+      
+      {/* Header with Home button */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+        <h1 style={{ fontSize: "32px", fontWeight: "600", color: "#2c3e50", margin: 0 }}>🎵 Albums</h1>
+        <button
+          onClick={() => navigate(`/home/users/${userId}`)}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#2c3e50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "500"
+          }}
+        >
+          Home
+        </button>
+      </div>
 
+      {/* Search Input */}
+      <div style={{ marginBottom: "20px", display: "flex", justifyContent: "flex-start" }}>
+        <input
+          type="text"
+          placeholder="Search by ID or title"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            padding: "10px",
+            fontSize: "14px",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            width: "300px"
+          }}
+        />
+      </div>
+
+      {/* Albums Grid */}
       <div
         style={{
           display: "grid",
@@ -71,7 +113,7 @@ function Albums() {
           gap: "20px",
         }}
       >
-        {albums.map((album) => (
+        {filteredAlbums.map((album) => (
           <div
             key={album.id}
             style={{
@@ -164,4 +206,3 @@ function Albums() {
 }
 
 export default Albums;
-

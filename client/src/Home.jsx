@@ -120,7 +120,7 @@ function Home() {
     localStorage.removeItem('temp');
     navigate('/');
   };
-
+  
   // פונקציה לניווט לעמודים שונים
   const navigateToPage = (page) => {
     if (currentUser && currentUser.id) {

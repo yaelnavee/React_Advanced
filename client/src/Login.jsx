@@ -14,12 +14,12 @@ const handleSubmit = async (e) => {
     e.preventDefault()
     const result = await fetch(`http://localhost:3000/users?username=${username}&website=${password}`);
     const users = await result.json();
-    if(users==0){
+    if(users.length==0){
       setError("Username or password are incorrect")
       return
     }
-    localStorage.setItem("currentUser", JSON.stringify(users[1]))
-    navigate('/home')
+    localStorage.setItem("currentUser", JSON.stringify(users[0]))
+    navigate(`/home/users/${users[0].id}`)
   };
 
 
