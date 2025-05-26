@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './css/Posts.css';
 
 function Posts() {
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -13,7 +16,7 @@ function Posts() {
   
   // מצבי UI
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchBy, setSearchBy] = useState('title'); // 'id' או 'title'
+  const [searchBy, setSearchBy] = useState('title');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
@@ -21,185 +24,220 @@ function Posts() {
   // טפסי הוספה ועריכה
   const [newPost, setNewPost] = useState({ title: '', body: '' });
   const [newComment, setNewComment] = useState('');
-  
-  const navigate = useNavigate();
-  const { userId } = useParams();
 
   // טעינת נתונים בתחילה
   useEffect(() => {
-  const userData = localStorage.getItem('currentUser');
-  if (!userData) {
-    navigate('/');
-    return;
-  }
-  
-  try {
-    let user;
-    if (typeof userData === 'string') {
-      try {
-        user = JSON.parse(userData);
-      } catch {
+    const userData = localStorage.getItem('currentUser');
+    if (!userData) {
+      navigate('/');
+      return;
+    }
+    
+    try {
+      let user;
+      if (typeof userData === 'string') {
+        try {
+          user = JSON.parse(userData);
+        } catch {
+          user = userData;
+        }
+      } else {
         user = userData;
       }
-    } else {
-      user = userData;
-    }
-    
-    if (userId && user.id && parseInt(userId) !== parseInt(user.id)) {
-      navigate('/home');
-      return;
-    }
-    
-    setCurrentUser(user);
-    loadPosts();
-  } catch (err) {
-    console.error('Error loading user:', err);
-    navigate('/');
-  }
-}, [navigate, userId]);
-
-  // טעינת פוסטים
-  const loadPosts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('http://localhost:3000/posts');
-      if (!response.ok) throw new Error('Failed to fetch posts');
-      const data = await response.json();
-      setPosts(data);
-    } catch (err) {
-      setError('שגיאה בטעינת הפוסטים');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // טעינת תגובות לפוסט
-  const loadComments = async (postId) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3000/comments?postId=${postId}`);
-      if (!response.ok) throw new Error('Failed to fetch comments');
-      const data = await response.json();
-      setComments(data);
-      setShowComments(true);
-    } catch (err) {
-      setError('שגיאה בטעינת התגובות');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // הוספת פוסט חדש
-  const addPost = async () => {
-    if (!newPost.title.trim() || !newPost.body.trim()) {
-      setError('נא למלא את כל השדות');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const postData = {
-        userId: currentUser.id,
-        id: Math.max(...posts.map(p => p.id), 0) + 1,
-        title: newPost.title,
-        body: newPost.body
-      };
-
-      const response = await fetch('http://localhost:3000/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(postData)
-      });
-
-      if (!response.ok) throw new Error('Failed to add post');
       
-      setPosts([...posts, postData]);
-      setNewPost({ title: '', body: '' });
-      setShowAddForm(false);
-      setError(null);
+      if (userId && user.id && parseInt(userId) !== parseInt(user.id)) {
+        navigate('/home');
+        return;
+      }
+      
+      setCurrentUser(user);
+      getPosts();
     } catch (err) {
-      setError('שגיאה בהוספת הפוסט');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error('Error loading user:', err);
+      navigate('/');
     }
+  }, [navigate, userId]);
+
+  // טעינת פוסטים (כמו getTodos)
+  const getPosts = () => {
+    fetch(`http://localhost:3000/posts?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPosts(data);
+        localStorage.setItem(`posts_${userId}`, JSON.stringify(data));
+      })
+      .catch((err) => {
+        console.error('Error fetching posts:', err);
+        const savedPosts = localStorage.getItem(`posts_${userId}`);
+        if (savedPosts) {
+          setPosts(JSON.parse(savedPosts));
+          setError('נטענו פוסטים מהמטמון המקומי');
+        } else {
+          setError('שגיאה בטעינת הפוסטים');
+        }
+      });
   };
 
-  // מחיקת פוסט
-  const deletePost = async (postId) => {
+  // טעינת תגובות לפוסט (עם סינון נכון)
+  const getComments = (postId) => {
+    console.log(`Loading comments for post ${postId}`);
+    
+    fetch(`http://localhost:3000/comments`)
+      .then((res) => res.json())
+      .then((allComments) => {
+        // סנן את התגובות לפי postId או אם postId הוא null והתגובה שייכת למשתמש הנוכחי
+        const filteredComments = allComments.filter(comment => {
+          return comment.postId === parseInt(postId) || 
+                 (comment.postId === null && comment.userId === userId);
+        });
+        
+        console.log(`Found ${filteredComments.length} comments for post ${postId}:`, filteredComments);
+        setComments(filteredComments);
+        setShowComments(true);
+        localStorage.setItem(`comments_${postId}`, JSON.stringify(filteredComments));
+      })
+      .catch((err) => {
+        console.error('Error fetching comments:', err);
+        const savedComments = localStorage.getItem(`comments_${postId}`);
+        if (savedComments) {
+          setComments(JSON.parse(savedComments));
+          setShowComments(true);
+          setError('נטענו תגובות מהמטמון המקומי');
+        } else {
+          setError('שגיאה בטעינת התגובות');
+          setComments([]);
+          setShowComments(true);
+        }
+      });
+  };
+
+  // הוספת פוסט חדש (כמו handleAdd)
+  const handleAddPost = async () => {
+    if (!newPost.title.trim() || !newPost.body.trim()) return;
+
+    // קבלת ID הבא מכל הפוסטים
+    const allPostsResponse = await fetch('http://localhost:3000/posts');
+    const allPosts = await allPostsResponse.json();
+    const nextId = (Number(allPosts[allPosts.length - 1]?.id || 0) + 1).toString();
+
+    const postData = {
+      userId: parseInt(userId),
+      id: nextId,
+      title: newPost.title,
+      body: newPost.body
+    };
+
+    await fetch('http://localhost:3000/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postData)
+    });
+
+    getPosts(); // רענון הרשימה
+    setNewPost({ title: '', body: '' });
+    setShowAddForm(false);
+  };
+
+  // מחיקת פוסט (עם טיפול בשגיאות)
+  const handleDeletePost = async (postId) => {
     if (!window.confirm('האם אתה בטוח שברצונך למחוק את הפוסט?')) return;
 
-    setLoading(true);
     try {
       const response = await fetch(`http://localhost:3000/posts/${postId}`, {
         method: 'DELETE'
       });
-
-      if (!response.ok) throw new Error('Failed to delete post');
       
-      setPosts(posts.filter(p => p.id !== postId));
-      if (selectedPost && selectedPost.id === postId) {
-        setSelectedPost(null);
-        setShowComments(false);
+      // גם אם יש שגיאת 404, נמשיך להסיר את הפוסט מהמצב המקומי
+      if (!response.ok && response.status !== 404) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
     } catch (err) {
-      setError('שגיאה במחיקת הפוסט');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error('Error deleting post:', err);
+      // נמשיך גם במקרה של שגיאה
+    }
+    
+    getPosts(); // רענון הרשימה
+    
+    if (selectedPost && selectedPost.id === postId) {
+      setSelectedPost(null);
+      setShowComments(false);
     }
   };
 
-  // עדכון פוסט
-  const updatePost = async () => {
-    if (!editingPost.title.trim() || !editingPost.body.trim()) {
-      setError('נא למלא את כל השדות');
-      return;
-    }
-
-    setLoading(true);
+  // שמירת שינויים בפוסט (עם טיפול בשגיאות)
+  const handleSavePost = async (postId) => {
+    const postToSave = posts.find(post => post.id === postId);
+    if (!postToSave) return;
+    
     try {
-      const response = await fetch(`http://localhost:3000/posts/${editingPost.id}`, {
+      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingPost)
+        body: JSON.stringify(postToSave)
       });
 
-      if (!response.ok) throw new Error('Failed to update post');
-      
-      setPosts(posts.map(p => p.id === editingPost.id ? editingPost : p));
-      if (selectedPost && selectedPost.id === editingPost.id) {
-        setSelectedPost(editingPost);
+      if (!response.ok && response.status !== 404) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      setShowEditForm(false);
-      setEditingPost(null);
+
+      localStorage.setItem(`posts_${userId}`, JSON.stringify(posts));
+      
+      if (selectedPost && selectedPost.id === postId) {
+        setSelectedPost(postToSave);
+      }
     } catch (err) {
-      setError('שגיאה בעדכון הפוסט');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error('Error saving post:', err);
+      setError('שגיאה בשמירת הפוסט');
     }
   };
 
-  // הוספת תגובה
-  const addComment = async () => {
-    if (!newComment.trim()) {
-      setError('נא להכניס תוכן לתגובה');
-      return;
-    }
+  // עדכון פוסט בזמן אמת
+  const handleUpdatePost = (postId, field, newValue) => {
+    setPosts(posts.map(post => 
+      post.id === postId ? { ...post, [field]: newValue } : post
+    ));
+  };
 
-    setLoading(true);
+  // עדכון פוסט במודל (כמו handleSave)
+  const updatePost = async () => {
+    if (!editingPost.title.trim() || !editingPost.body.trim()) return;
+
+    await fetch(`http://localhost:3000/posts/${editingPost.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editingPost)
+    });
+
+    getPosts(); // רענון הרשימה
+    if (selectedPost && selectedPost.id === editingPost.id) {
+      setSelectedPost(editingPost);
+    }
+    setShowEditForm(false);
+    setEditingPost(null);
+  };
+
+  // הוספת תגובה (עם ID נכון)
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+
     try {
+      // קבלת ID הבא מכל התגובות
+      const allCommentsResponse = await fetch('http://localhost:3000/comments');
+      const allComments = await allCommentsResponse.json();
+      
+      // מציאת ה-ID הגדול ביותר
+      const maxId = allComments.length > 0 ? Math.max(...allComments.map(c => parseInt(c.id))) : 0;
+      const nextId = maxId + 1;
+
+      console.log(`Adding comment with ID ${nextId} to post ${selectedPost.id}`);
+
       const commentData = {
-        postId: selectedPost.id,
-        id: Math.max(...comments.map(c => c.id), 0) + 1,
+        postId: parseInt(selectedPost.id), // וודא שזה מספר
+        id: nextId.toString(),
         name: currentUser.name || currentUser.username,
         email: currentUser.email || 'user@example.com',
         body: newComment,
-        userId: currentUser.id
+        userId: parseInt(userId)
       };
 
       const response = await fetch('http://localhost:3000/comments', {
@@ -208,37 +246,28 @@ function Posts() {
         body: JSON.stringify(commentData)
       });
 
-      if (!response.ok) throw new Error('Failed to add comment');
-      
-      setComments([...comments, commentData]);
-      setNewComment('');
+      if (response.ok) {
+        getComments(selectedPost.id); // רענון התגובות
+        setNewComment('');
+        console.log('Comment added successfully');
+      } else {
+        throw new Error('Failed to add comment');
+      }
     } catch (err) {
+      console.error('Error adding comment:', err);
       setError('שגיאה בהוספת התגובה');
-      console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  // מחיקת תגובה
-  const deleteComment = async (commentId) => {
+  // מחיקת תגובה (כמו handleDelete)
+  const handleDeleteComment = async (commentId) => {
     if (!window.confirm('האם אתה בטוח שברצונך למחוק את התגובה?')) return;
 
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3000/comments/${commentId}`, {
-        method: 'DELETE'
-      });
+    await fetch(`http://localhost:3000/comments/${commentId}`, {
+      method: 'DELETE'
+    });
 
-      if (!response.ok) throw new Error('Failed to delete comment');
-      
-      setComments(comments.filter(c => c.id !== commentId));
-    } catch (err) {
-      setError('שגיאה במחיקת התגובה');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    getComments(selectedPost.id); // רענון התגובות
   };
 
   // סינון פוסטים לפי חיפוש
@@ -252,9 +281,6 @@ function Posts() {
     }
   });
 
-  // פוסטים של המשתמש הנוכחי
-  const userPosts = posts.filter(post => post.userId === currentUser?.id);
-
   if (!currentUser) {
     return <div className="loading">טוען...</div>;
   }
@@ -266,7 +292,7 @@ function Posts() {
         <div className="header-content">
           <h1>ניהול פוסטים</h1>
           <button 
-            onClick={() => navigate('/home')} 
+            onClick={() => navigate(`/home/users/${userId}`)} 
             className="back-btn"
           >
             חזור לעמוד הבית
@@ -315,8 +341,7 @@ function Posts() {
               הוסף פוסט חדש
             </button>
             <div className="stats">
-              <span>סה"כ פוסטים: {posts.length}</span>
-              <span>הפוסטים שלי: {userPosts.length}</span>
+              <span>הפוסטים שלי: {posts.length}</span>
             </div>
           </div>
         </div>
@@ -328,18 +353,28 @@ function Posts() {
             <div className="posts-items">
               {filteredPosts.map(post => (
                 <div 
-                  key={post.id} 
+                  key={`post-${post.id}-${post.userId}`} 
                   className={`post-item ${selectedPost?.id === post.id ? 'selected' : ''}`}
                 >
                   <div className="post-header">
                     <span className="post-id">#{post.id}</span>
                     <span className="post-user">משתמש: {post.userId}</span>
-                    {post.userId === currentUser.id && (
-                      <span className="my-post-badge">שלי</span>
-                    )}
+                    <span className="my-post-badge">שלי</span>
                   </div>
                   
-                  <h4 className="post-title">{post.title}</h4>
+                  <input
+                    type="text"
+                    value={post.title}
+                    onChange={(e) => handleUpdatePost(post.id, 'title', e.target.value)}
+                    style={{
+                      width: '100%',
+                      border: 'none',
+                      background: 'transparent',
+                      fontSize: '1.1rem',
+                      fontWeight: 'bold',
+                      marginBottom: '10px'
+                    }}
+                  />
                   
                   <div className="post-actions">
                     <button 
@@ -349,25 +384,33 @@ function Posts() {
                       {selectedPost?.id === post.id ? 'נבחר' : 'בחר'}
                     </button>
                     
-                    {post.userId === currentUser.id && (
-                      <>
-                        <button 
-                          onClick={() => {
-                            setEditingPost({...post});
-                            setShowEditForm(true);
-                          }}
-                          className="edit-btn"
-                        >
-                          ערוך
-                        </button>
-                        <button 
-                          onClick={() => deletePost(post.id)}
-                          className="delete-btn"
-                        >
-                          מחק
-                        </button>
-                      </>
-                    )}
+                    <button 
+                      onClick={() => {
+                        setEditingPost({...post});
+                        setShowEditForm(true);
+                      }}
+                      className="edit-btn"
+                    >
+                      ערוך
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleSavePost(post.id)}
+                      className="save-btn"
+                      style={{
+                        backgroundColor: "#2ecc71",
+                        color: "white"
+                      }}
+                    >
+                      שמור
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleDeletePost(post.id)}
+                      className="delete-btn"
+                    >
+                      מחק
+                    </button>
                   </div>
                 </div>
               ))}
@@ -393,7 +436,19 @@ function Posts() {
                 
                 <div className="post-content">
                   <h4>{selectedPost.title}</h4>
-                  <p>{selectedPost.body}</p>
+                  <textarea
+                    value={posts.find(p => p.id === selectedPost.id)?.body || ''}
+                    onChange={(e) => handleUpdatePost(selectedPost.id, 'body', e.target.value)}
+                    style={{
+                      width: '100%',
+                      minHeight: '100px',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                      padding: '10px',
+                      fontSize: '1rem',
+                      resize: 'vertical'
+                    }}
+                  />
                 </div>
 
                 <div className="post-meta">
@@ -404,43 +459,46 @@ function Posts() {
                 <div className="comments-section">
                   <div className="comments-header">
                     <button 
-                      onClick={() => loadComments(selectedPost.id)}
+                      onClick={() => getComments(selectedPost.id)}
                       className="load-comments-btn"
                     >
-                      {showComments ? 'רענן תגובות' : 'טען תגובות'}
+                      {showComments ? `רענן תגובות (${comments.length})` : 'טען תגובות'}
                     </button>
+                    {showComments && (
+                      <p style={{ fontSize: '14px', color: '#666', margin: '5px 0' }}>
+                        תגובות לפוסט #{selectedPost.id}
+                      </p>
+                    )}
                   </div>
 
                   {showComments && (
                     <>
                       {/* הוספת תגובה */}
-                      {selectedPost.userId === currentUser.id && (
-                        <div className="add-comment">
-                          <textarea
-                            placeholder="הכנס תגובה חדשה..."
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            className="comment-input"
-                          />
-                          <button onClick={addComment} className="add-comment-btn">
-                            הוסף תגובה
-                          </button>
-                        </div>
-                      )}
+                      <div className="add-comment">
+                        <textarea
+                          placeholder="הכנס תגובה חדשה..."
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          className="comment-input"
+                        />
+                        <button onClick={handleAddComment} className="add-comment-btn">
+                          הוסף תגובה
+                        </button>
+                      </div>
 
                       {/* רשימת תגובות */}
                       <div className="comments-list">
                         <h5>תגובות ({comments.length})</h5>
-                        {comments.map(comment => (
-                          <div key={comment.id} className="comment-item">
+                        {comments.map((comment, index) => (
+                          <div key={`comment-${comment.id}-${comment.postId || selectedPost.id}-${index}`} className="comment-item">
                             <div className="comment-header">
                               <strong>{comment.name}</strong>
                               <span className="comment-email">{comment.email}</span>
-                              {comment.userId === currentUser.id && (
+                              {comment.userId === parseInt(userId) && (
                                 <div className="comment-actions">
                                   <span className="my-comment">שלי</span>
                                   <button 
-                                    onClick={() => deleteComment(comment.id)}
+                                    onClick={() => handleDeleteComment(comment.id)}
                                     className="delete-comment-btn"
                                   >
                                     מחק
@@ -449,6 +507,9 @@ function Posts() {
                               )}
                             </div>
                             <p className="comment-body">{comment.body}</p>
+                            <small style={{ color: '#999', fontSize: '12px' }}>
+                              מזהה תגובה: {comment.id} | מזהה פוסט: {comment.postId || 'null'}
+                            </small>
                           </div>
                         ))}
                       </div>
@@ -485,7 +546,7 @@ function Posts() {
                 rows="4"
               />
               <div className="modal-actions">
-                <button onClick={addPost} className="save-btn">שמור</button>
+                <button onClick={handleAddPost} className="save-btn">שמור</button>
                 <button onClick={() => setShowAddForm(false)} className="cancel-btn">בטל</button>
               </div>
             </div>
