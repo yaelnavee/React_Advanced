@@ -78,7 +78,35 @@ function Posts() {
       });
   };
 
-  // טעינת תגובות לפוסט (עם סינון נכון)
+  // פונקציה לתיקון תגובות עם postId null
+  const fixNullPostIdComments = async (targetPostId) => {
+    try {
+      const response = await fetch('http://localhost:3000/comments');
+      const allComments = await response.json();
+      
+      // מצא תגובות עם postId null של המשתמש הנוכחי
+      const nullPostIdComments = allComments.filter(comment => 
+        comment.postId === null && comment.userId === userId
+      );
+      
+      // עדכן את התגובות האלה עם הפוסט הנוכחי
+      for (const comment of nullPostIdComments) {
+        const updatedComment = { ...comment, postId: parseInt(targetPostId) };
+        
+        await fetch(`http://localhost:3000/comments/${comment.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedComment)
+        });
+      }
+      
+      console.log(`Fixed ${nullPostIdComments.length} comments with null postId`);
+      return nullPostIdComments.length > 0;
+    } catch (err) {
+      console.error('Error fixing null postId comments:', err);
+      return false;
+    }
+  };
   const getComments = (postId) => {
     console.log(`Loading comments for post ${postId}`);
     
@@ -290,7 +318,7 @@ function Posts() {
       {/* כותרת וניווט */}
       <header className="posts-header">
         <div className="header-content">
-          <h1>ניהול פוסטים</h1>
+          <h1> 📰 ניהול פוסטים</h1>
           <button 
             onClick={() => navigate(`/home/users/${userId}`)} 
             className="back-btn"
@@ -392,17 +420,6 @@ function Posts() {
                       className="edit-btn"
                     >
                       ערוך
-                    </button>
-                    
-                    <button 
-                      onClick={() => handleSavePost(post.id)}
-                      className="save-btn"
-                      style={{
-                        backgroundColor: "#2ecc71",
-                        color: "white"
-                      }}
-                    >
-                      שמור
                     </button>
                     
                     <button 

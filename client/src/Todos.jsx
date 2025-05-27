@@ -1,18 +1,6 @@
-
-// /**
-//  * TODO:
-//  * 1. styles
-//  * 2. save changes button----------------------------
-//  * 3. delete button----------------------------------
-//  * 4. completed--------------------------------------
-//  * 5. filter-----------------------------------------
-//  * 6. search-----------------------------------------
-//  * 7. header?
-//  * 8. add--------------------------------------------
-//  * 9. save button grayed ??
-//  */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import './css/Posts.css'; // שימוש באותו CSS של הפוסטים
 
 export default function Todos() {
   const { userId } = useParams();
@@ -112,172 +100,214 @@ export default function Todos() {
     });
 
   return (
-    <div
-      style={{
-        padding: "30px",
-        fontFamily: "'Segoe UI', sans-serif",
-        maxWidth: "800px",
-        margin: "auto",
-      }}
-    >
-      {/* Header with Home button */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1 style={{ fontSize: "32px", fontWeight: "600", color: "#2c3e50", margin: 0 }}>
-          📝 Todos
-        </h1>
-        <button
-          onClick={() => navigate(`/home/users/${userId}`)}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#2c3e50",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontWeight: "500"
-          }}
-        >
-          Home
-        </button>
-      </div>
-
-      {/* Input for new todo */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
-        <input
-          type="text"
-          placeholder="Enter new todo..."
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "6px",
-            fontSize: "16px",
-          }}
-        />
-        <button
-          onClick={handleAdd}
-          style={{
-            padding: "10px 16px",
-            backgroundColor: "#3498db",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Add
-        </button>
-      </div>
-
-      {/* Search and sort controls */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        <input
-          type="text"
-          placeholder="Search todos..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "6px",
-            fontSize: "16px",
-          }}
-        />
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          style={{
-            padding: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "6px",
-            fontSize: "16px",
-          }}
-        >
-          <option value="id">Sort by ID</option>
-          <option value="title">Sort by Title</option>
-          <option value="completed">Sort by Status</option>
-        </select>
-      </div>
-
-      {/* Todo list */}
-      <div>
-        {filteredTodos.map((todo) => (
-          <div
-            key={todo.id}
-            style={{
-              background: "#f9f9f9",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "12px",
-              marginBottom: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-            }}
+    <div className="posts-container">
+      {/* כותרת וניווט */}
+      <header className="posts-header">
+        <div className="header-content">
+          <h1>📝 ניהול משימות</h1>
+          <button 
+            onClick={() => navigate(`/home/users/${userId}`)} 
+            className="back-btn"
           >
-            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => handleToggle(todo.id)}
-                style={{ transform: "scale(1.2)", cursor: "pointer" }}
-              />
+            חזור לעמוד הבית
+          </button>
+        </div>
+      </header>
+
+      <div className="posts-content">
+        {/* פאנל בקרה */}
+        <div className="controls-panel">
+          <div className="search-section">
+            <h3>חיפוש משימות</h3>
+            <div className="search-controls">
+              <select 
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value)}
+                className="search-select"
+              >
+                <option value="id">מיין לפי מזהה</option>
+                <option value="title">מיין לפי כותרת</option>
+                <option value="completed">מיין לפי סטטוס</option>
+              </select>
               <input
                 type="text"
-                value={todo.title}
-                onChange={(e) => handleUpdate(todo.id, e.target.value)}
-                style={{
-                  flex: 1,
-                  border: "none",
-                  background: "transparent",
-                  fontSize: "16px",
-                  textDecoration: todo.completed ? "line-through" : "none",
-                }}
+                placeholder="חפש משימות..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
               />
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "12px", color: "#999" }}>#{todo.id}</span>
-              <button
-                onClick={() => handleSave(todo.id)}
+          </div>
+
+          <div className="actions-section">
+            <div style={{ marginBottom: '15px' }}>
+              <input
+                type="text"
+                placeholder="הכנס משימה חדשה..."
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
                 style={{
-                  backgroundColor: "#2ecc71",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "6px 10px",
-                  cursor: "pointer",
+                  width: '100%',
+                  padding: '12px',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  marginBottom: '10px',
+                  boxSizing: 'border-box'
                 }}
+              />
+              <button 
+                onClick={handleAdd}
+                className="action-btn add-btn"
+                style={{ width: '100%' }}
               >
-                Save
-              </button>
-              <button
-                onClick={() => handleDelete(todo.id)}
-                style={{
-                  backgroundColor: "#e74c3c",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "6px 10px",
-                  cursor: "pointer",
-                }}
-              >
-                Delete
+                הוסף משימה
               </button>
             </div>
+            <div className="stats">
+              <span>סה"כ משימות: {todos.length}</span>
+              <span>הושלמו: {todos.filter(t => t.completed).length}</span>
+              <span>בתהליך: {todos.filter(t => !t.completed).length}</span>
+            </div>
           </div>
-        ))}
+        </div>
+
+        {/* רשימת משימות */}
+        <div className="posts-list" style={{ maxWidth: 'none', margin: '0' }}>
+          <h3>רשימת משימות ({filteredTodos.length})</h3>
+          <div className="posts-items">
+            {filteredTodos.map((todo) => (
+              <div
+                key={todo.id}
+                className={`post-item ${todo.completed ? 'completed-todo' : ''}`}
+                style={{
+                  opacity: todo.completed ? 0.7 : 1,
+                  background: todo.completed ? 
+                    'linear-gradient(145deg, #e8f5e8, #d4edda)' : 
+                    'white'
+                }}
+              >
+                <div className="post-header">
+                  <span className="post-id">#{todo.id}</span>
+                  <span className="post-user">משתמש: {userId}</span>
+                  <span 
+                    className="my-post-badge"
+                    style={{
+                      background: todo.completed ? 
+                        'linear-gradient(45deg, #28a745, #20c997)' : 
+                        'linear-gradient(45deg, #ffc107, #fd7e14)'
+                    }}
+                  >
+                    {todo.completed ? 'הושלם' : 'בתהליך'}
+                  </span>
+                </div>
+                
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '15px',
+                  marginBottom: '15px'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => handleToggle(todo.id)}
+                    style={{ 
+                      transform: 'scale(1.3)', 
+                      cursor: 'pointer',
+                      accentColor: '#4CAF50'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={todo.title}
+                    onChange={(e) => handleUpdate(todo.id, e.target.value)}
+                    style={{
+                      flex: 1,
+                      border: 'none',
+                      background: 'transparent',
+                      fontSize: '1.1rem',
+                      fontWeight: todo.completed ? 'normal' : 'bold',
+                      textDecoration: todo.completed ? 'line-through' : 'none',
+                      color: todo.completed ? '#666' : '#333'
+                    }}
+                  />
+                </div>
+                
+                <div className="post-actions">
+                  <button 
+                    onClick={() => handleSave(todo.id)}
+                    className="save-btn"
+                    style={{
+                      backgroundColor: "#2ecc71",
+                      color: "white",
+                      padding: "6px 12px",
+                      border: "none",
+                      borderRadius: "15px",
+                      fontSize: "0.8rem",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
+                    }}
+                  >
+                    שמור
+                  </button>
+                  
+                  <button 
+                    onClick={() => handleDelete(todo.id)}
+                    className="delete-btn"
+                  >
+                    מחק
+                  </button>
+                </div>
+              </div>
+            ))}
+            
+            {filteredTodos.length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: '40px',
+                color: '#666',
+                fontSize: '1.1rem'
+              }}>
+                {search ? 'לא נמצאו משימות התואמות לחיפוש' : 'אין משימות עדיין'}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      <style jsx>{`
+        .completed-todo {
+          border-color: #28a745 !important;
+        }
+        
+        .completed-todo:hover {
+          border-color: #20c997 !important;
+          transform: translateX(-5px);
+        }
+        
+        @media (max-width: 768px) {
+          .controls-panel {
+            grid-template-columns: 1fr;
+          }
+          
+          .search-controls {
+            flex-direction: column;
+            gap: 10px;
+          }
+          
+          .search-input,
+          .search-select {
+            width: 100%;
+          }
+          
+          .post-actions {
+            flex-wrap: wrap;
+            gap: 5px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

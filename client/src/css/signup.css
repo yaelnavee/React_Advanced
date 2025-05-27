@@ -1,58 +1,308 @@
-.signup-container {
-  max-width: 700px;
-  margin: 50px auto;
-  padding: 2rem;
-  background-color: #f9fafb;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: sans-serif;
+/* עמוד השלמת הרשמה - סגנונות מותאמים */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  direction: rtl;
 }
 
+/* תיבת השלמת הרשמה */
+.signup-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  animation: slideIn 0.5s ease-out;
+}
+
+/* כותרת */
+.login-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.login-title {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.login-description {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* טופס הרשמה */
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 20px;
 }
 
-.signup-form h2,
-.signup-form h3 {
-  margin-top: 1rem;
-  color: #1f2937;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0.3rem;
+/* קטע בטופס */
+.form-section {
+  background: rgba(248, 249, 250, 0.6);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
-.signup-form label {
-  font-weight: 500;
-  color: #374151;
+.section-title {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 6px;
 }
 
-.signup-form input {
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background-color: #ffffff;
-  transition: border-color 0.2s ease;
+/* שורת שדות */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-.signup-form input:focus {
+/* קבוצת שדות */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* תוויות */
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+/* שדות קלט */
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
 }
 
-.signup-form button {
-  padding: 0.75rem;
-  font-size: 1rem;
-  background-color: #3b82f6;
-  color: #ffffff;
+.form-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.form-input[required] {
+  border-left: 3px solid #4CAF50;
+}
+
+/* כפתור השלמת הרשמה */
+.signup-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(45deg, #FF9800, #f57c00);
   border: none;
-  border-radius: 6px;
+  border-radius: 25px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.signup-form button:hover {
-  background-color: #2563eb;
+.signup-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+}
+
+.signup-button:active {
+  transform: translateY(0);
+}
+
+/* אנימציות */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 15px;
+  }
+  
+  .signup-box {
+    max-width: none;
+    max-height: 95vh;
+    padding: 25px 20px;
+  }
+  
+  .login-title {
+    font-size: 1.7rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .form-section {
+    padding: 15px;
+  }
+  
+  .section-title {
+    font-size: 1rem;
+  }
+  
+  .form-label {
+    font-size: 0.85rem;
+  }
+  
+  .form-input {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+  }
+  
+  .signup-box {
+    padding: 20px 15px;
+    max-height: 98vh;
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+  }
+  
+  .login-description {
+    font-size: 0.8rem;
+  }
+  
+  .form-section {
+    padding: 12px 10px;
+  }
+  
+  .section-title {
+    font-size: 0.95rem;
+  }
+  
+  .form-label {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+  }
+  
+  .form-input {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+  
+  .signup-button {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .signup-box {
+    padding: 15px 10px;
+  }
+  
+  .login-title {
+    font-size: 1.3rem;
+  }
+  
+  .form-section {
+    padding: 10px 8px;
+  }
+  
+  .section-title {
+    font-size: 0.9rem;
+  }
+  
+  .form-input {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+  
+  .signup-button {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+/* גלילה חלקה */
+.signup-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.signup-box::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.signup-box::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+.signup-box::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #5a6fd8, #6a42a0);
+}
+
+/* אפקטים נוספים */
+.form-section:hover {
+  background: rgba(248, 249, 250, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-input:hover {
+  border-color: #b0bec5;
+}
+
+/* אינדיקטור שדות נדרשים */
+.form-label::after {
+  content: ' *';
+  color: #f44336;
+  font-weight: bold;
+}
+
+.form-section:nth-child(3) .form-label::after,
+.form-section:nth-child(4) .form-label::after {
+  content: '';
 }
