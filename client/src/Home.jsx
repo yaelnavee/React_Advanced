@@ -3,35 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import './css/Home.css';
 
 function Home() {
-  const [users, setUsers] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [todos, setTodos] = useState([]);
-  const [albums, setAlbums] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [showUserInfo, setShowUserInfo] = useState(false);
   
   const navigate = useNavigate();
 
-  // בדיקה אם המשתמש מחובר וטעינת הנתונים שלו
+  // בדיקה אם המשתמש מחובר
   useEffect(() => {
     const userData = localStorage.getItem('currentUser');
     if (!userData) {
-      // אם אין משתמש מחובר, חזור לעמוד התחברות
       navigate('/');
       return;
     }
     
     try {
-      // בדיקה אם הנתונים כבר object או צריכים parsing
       let user;
       if (typeof userData === 'string') {
-        // אם זה string, נסה לעשות parse
         try {
           user = JSON.parse(userData);
         } catch {
-          // אם ה-parse נכשל, זה אומר שזה כבר object כ-string
           user = userData;
         }
       } else {
@@ -45,74 +35,6 @@ function Home() {
       navigate('/');
     }
   }, [navigate]);
-
-  // פונקציה לטעינת משתמשים
-  const loadUsers = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('http://localhost:3000/users');
-      if (!response.ok) throw new Error('Failed to fetch users');
-      const data = await response.json();
-      setUsers(data);
-    } catch (err) {
-      setError('שגיאה בטעינת המשתמשים');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // פונקציה לטעינת פוסטים
-  const loadPosts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('http://localhost:3000/posts');
-      if (!response.ok) throw new Error('Failed to fetch posts');
-      const data = await response.json();
-      setPosts(data);
-    } catch (err) {
-      setError('שגיאה בטעינת הפוסטים');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // פונקציה לטעינת משימות
-  const loadTodos = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('http://localhost:3000/todos');
-      if (!response.ok) throw new Error('Failed to fetch todos');
-      const data = await response.json();
-      setTodos(data);
-    } catch (err) {
-      setError('שגיאה בטעינת המשימות');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // פונקציה לטעינת אלבומים
-  const loadAlbums = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('http://localhost:3000/albums');
-      if (!response.ok) throw new Error('Failed to fetch albums');
-      const data = await response.json();
-      setAlbums(data);
-    } catch (err) {
-      setError('שגיאה בטעינת האלבומים');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // פונקציה להתנתקות
   const handleLogout = () => {
@@ -231,75 +153,63 @@ function Home() {
       )}
 
       <div className="home-content">
-        {/* הודעות שגיאה וטעינה */}
-        {loading && (
-          <div className="message loading-message">
-            טוען נתונים...
-          </div>
-        )}
-
-        {error && (
-          <div className="message error-message">
-            {error}
-          </div>
-        )}
-
-        {/* כפתורי טעינת נתונים */}
-        <div className="actions-section">
-          <h2>פעולות מהירות</h2>
-          <div className="buttons-grid">
-            <button
-              onClick={loadUsers}
-              className="action-button users-button"
-            >
-              טען משתמשים ({users.length})
-            </button>
-
-            <button
-              onClick={loadPosts}
-              className="action-button posts-button"
-            >
-              טען פוסטים ({posts.length})
-            </button>
-
-            <button
-              onClick={loadTodos}
-              className="action-button todos-button"
-            >
-              טען משימות ({todos.length})
-            </button>
-
-            <button
-              onClick={loadAlbums}
-              className="action-button albums-button"
-            >
-              טען אלבומים ({albums.length})
-            </button>
+     
+        <div className="welcome-section">
+          <div className="welcome-card">
+            <div className="welcome-icon">🎉</div>
+            <h2>ברוכים הבאים למערכת ניהול התוכן שלכם!</h2>
+            <p>כאן תוכלו לנהל את המשימות, הפוסטים והאלבומים שלכם בקלות ובנוחות</p>
           </div>
         </div>
 
-        {/* סטטיסטיקות מהירות */}
-        <div className="stats-section">
-          <h2>סטטיסטיקות</h2>
-          <div className="stats-grid">
-            <div className="stat-card users-stat">
-              <h3>משתמשים</h3>
-              <p>{users.length}</p>
+    
+        <div className="quick-nav-section">
+          <h3>ניווט מהיר</h3>
+          <div className="nav-cards-grid">
+            <div 
+              className="nav-card todos-card"
+              onClick={() => navigateToPage('todos')}
+            >
+              <div className="card-icon">✓</div>
+              <h4>משימות</h4>
+              <p>נהלו את המשימות היומיות שלכם</p>
+            </div>
+
+            <div 
+              className="nav-card posts-card"
+              onClick={() => navigateToPage('posts')}
+            >
+              <div className="card-icon">📝</div>
+              <h4>פוסטים</h4>
+              <p>כתבו ושתפו את המחשבות שלכם</p>
+            </div>
+
+            <div 
+              className="nav-card albums-card"
+              onClick={() => navigateToPage('albums')}
+            >
+              <div className="card-icon">📸</div>
+              <h4>אלבומים</h4>
+              <p>ארגנו ושתפו את התמונות שלכם</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="info-footer">
+          <div className="info-cards">
+            <div className="info-card">
+              <h5>🚀 מהיר ופשוט</h5>
+              <p>ממשק נקי ואינטואיטיבי לניהול קל</p>
             </div>
             
-            <div className="stat-card posts-stat">
-              <h3>פוסטים</h3>
-              <p>{posts.length}</p>
+            <div className="info-card">
+              <h5>🔒 בטוח ואמין</h5>
+              <p>המידע שלכם נשמר בצורה בטוחה</p>
             </div>
             
-            <div className="stat-card todos-stat">
-              <h3>משימות</h3>
-              <p>{todos.length}</p>
-            </div>
-            
-            <div className="stat-card albums-stat">
-              <h3>אלבומים</h3>
-              <p>{albums.length}</p>
+            <div className="info-card">
+              <h5>📱 רספונסיבי</h5>
+              <p>עובד מושלם על כל המכשירים</p>
             </div>
           </div>
         </div>
