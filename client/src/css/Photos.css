@@ -1,0 +1,323 @@
+/* יבוא הסגנונות הבסיסיים מ-Posts.css */
+@import './Posts.css';
+
+/* סגנונות ייחודיים לעמוד התמונות */
+
+/* איפוס וכיוון נכון לתמונות */
+.photo-item .post-title {
+  min-height: 40px;
+  margin: 10px 0;
+  line-height: 1.3;
+}
+
+.photo-item {
+  display: block !important;
+  position: relative;
+}
+
+/* כפתורי כותרת */
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* מידע על האלבום */
+.album-info {
+  margin: 5px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* כפתור רענון */
+.refresh-btn {
+  background: linear-gradient(45deg, #17a2b8, #138496);
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+/* פריט תמונה */
+.photo-item {
+  position: relative;
+  min-height: 250px;
+}
+
+/* כפתור מחיקת תמונה */
+.delete-photo-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(231, 76, 60, 0.9);
+  border: none;
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.delete-photo-btn:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+
+/* מכולת התמונה */
+.photo-container {
+  text-align: center;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+/* תמונה */
+.photo-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.photo-image:hover {
+  transform: scale(1.05);
+}
+
+/* פריט הוספת תמונה */
+.add-photo-item {
+  background: rgba(102, 126, 234, 0.1);
+  border: 2px dashed #667eea;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  min-height: 250px;
+  transition: all 0.3s ease;
+  color: #667eea;
+}
+
+.add-photo-item:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: #764ba2;
+  transform: translateX(-5px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+}
+
+.add-photo-icon {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.add-photo-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* כפתור טעינה נוספת */
+.load-more-container {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.load-more-btn {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+.load-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+/* מצב ריק */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.empty-title {
+  margin-bottom: 10px;
+}
+
+.empty-subtitle {
+  font-size: 1rem;
+  color: #999;
+}
+
+/* תמונה נבחרת */
+.selected-photo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.selected-photo-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* שדה עריכת כותרת */
+.photo-title-input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.photo-title-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* פעולות תמונה נבחרת */
+.selected-photo-actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.selected-photo-actions .action-btn {
+  margin: 0 5px;
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.cancel-btn:hover {
+  background: #d0d0d0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* תמונה במודל */
+.modal-photo {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* אפקטי הובר לפריטי תמונות */
+.photo-item:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .selected-post-panel {
+    order: -1;
+    max-height: 50vh;
+  }
+  
+  .controls-panel {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .header-buttons {
+    justify-content: center;
+  }
+  
+  .selected-photo-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .selected-photo-actions .action-btn {
+    flex: 1;
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .posts-content {
+    padding: 15px;
+  }
+  
+  .controls-panel {
+    padding: 20px;
+  }
+  
+  .posts-list {
+    padding: 20px;
+  }
+  
+  .photo-item {
+    padding: 15px;
+  }
+  
+  .photo-image {
+    height: 120px;
+  }
+  
+  .selected-photo-image {
+    max-height: 200px;
+  }
+  
+  .delete-photo-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  .add-photo-icon {
+    font-size: 2.5rem;
+  }
+  
+  .add-photo-text {
+    font-size: 1rem;
+  }
+  
+  .empty-icon {
+    font-size: 2.5rem;
+  }
+  
+  .empty-state {
+    padding: 40px 15px;
+    font-size: 1.1rem;
+  }
+  
+  .actions-section {
+    text-align: center;
+  }
+  
+  .stats {
+    justify-content: center;
+  }
+}

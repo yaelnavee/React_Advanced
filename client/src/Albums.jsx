@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import './css/Posts.css'; // שימוש באותו CSS של הפוסטים
+import './css/Posts.css'; 
 
 function Albums() {
   const { userId } = useParams();
