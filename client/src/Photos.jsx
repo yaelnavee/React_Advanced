@@ -51,15 +51,6 @@ function Photos() {
       hasLoadedInitial.current = true;
       getPhotos();
     }
-  }, []);
-
-  useEffect(() => {
-    if (page === 0) return;
-    getPhotos();
-  }, [page]);
-
-  // רענון כשחוזרים מעמוד הוספת תמונות
-  useEffect(() => {
     const handleFocus = () => {
       refreshPhotos();
     };
@@ -67,6 +58,21 @@ function Photos() {
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
+
+  useEffect(() => {
+    if (page === 0) return;
+    getPhotos();
+  }, [page]);
+
+  // // רענון כשחוזרים מעמוד הוספת תמונות
+  // useEffect(() => {
+  //   const handleFocus = () => {
+  //     refreshPhotos();
+  //   };
+
+  //   window.addEventListener('focus', handleFocus);
+  //   return () => window.removeEventListener('focus', handleFocus);
+  // }, []);
 
   const handleLoadMore = () => {
     setPage((prev) => prev + 1);
