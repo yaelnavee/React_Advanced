@@ -58,7 +58,7 @@ function Posts() {
     }
   }, [navigate, userId]);
 
-  // טעינת פוסטים (כמו getTodos)
+  // טעינת פוסטים
   const getPosts = () => {
     fetch(`http://localhost:3000/posts?userId=${userId}`)
       .then((res) => res.json())

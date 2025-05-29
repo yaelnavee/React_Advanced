@@ -85,11 +85,18 @@ export default function Todos() {
   const filteredTodos = todos
     .filter((todo) => {
       if (!search.trim()) return true;
+      
+      const searchLower = search.toLowerCase();
+      
       return (
         todo.id.toString().includes(search) ||
-        todo.title.toLowerCase().includes(search.toLowerCase()) ||
-        (search.toLowerCase() === "completed" && todo.completed) ||
-        (search.toLowerCase() === "not completed" && !todo.completed)
+        todo.title.toLowerCase().includes(searchLower) ||
+        // חיפוש באנגלית
+        (searchLower === "completed" && todo.completed) ||
+        (searchLower === "not completed" && !todo.completed) ||
+        // חיפוש בעברית
+        (searchLower === "הושלם" && todo.completed) ||
+        (searchLower === "בתהליך" && !todo.completed)
       );
     })
     .sort((a, b) => {
